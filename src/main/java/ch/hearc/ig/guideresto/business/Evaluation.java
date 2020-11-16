@@ -1,11 +1,20 @@
 package ch.hearc.ig.guideresto.business;
 
+import jdk.jfr.Enabled;
+
+import javax.persistence.*;
 import java.util.Date;
 
+@Entity
+@Table (name = "COMMENTAIRES")
 public abstract class Evaluation {
-    
+
+    @Id
+    @Column (name = "numero")
     private Integer id;
+    @Column (name = "date_eval")
     private Date visitDate;
+    @Transient
     private Restaurant restaurant;
 
     public Evaluation() {

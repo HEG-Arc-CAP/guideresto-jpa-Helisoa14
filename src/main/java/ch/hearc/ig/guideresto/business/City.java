@@ -1,13 +1,21 @@
 package ch.hearc.ig.guideresto.business;
 
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
+@Table(name="VILLES")
 public class City {
-    
+
+    @Id
+    @Column(name="numero")
     private Integer id;
+    @Column (name="code_postal")
     private String zipCode;
+    @Column (name="nom_ville")
     private String cityName;
+    @Transient
     private Set<Restaurant> restaurants;
 
     public City() {
