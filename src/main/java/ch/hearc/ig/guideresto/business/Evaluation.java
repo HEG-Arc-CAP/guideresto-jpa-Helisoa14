@@ -18,7 +18,9 @@ public abstract class Evaluation {
     @Column (name = "date_eval")
     private Date visitDate;
 
-    @Transient
+    //toOne : on ne peut pas faire du mapped car la FK pointe toujours d'un seul coté
+    @ManyToOne
+    @JoinColumn(name = "fk_rest")
     private Restaurant restaurant;
 
     public Evaluation() {

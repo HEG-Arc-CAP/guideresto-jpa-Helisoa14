@@ -1,11 +1,20 @@
 package ch.hearc.ig.guideresto.business;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.util.Date;
 
+@Entity
+@Table(name = "LIKES")
 public class BasicEvaluation extends Evaluation {
-    
+
+    @Column(name = "appreciation")
     private boolean likeRestaurant;
+    @Column(name = "adresse_ip")
     private String ipAddress;
+    @Transient
     private String hello;
 
     public BasicEvaluation() {

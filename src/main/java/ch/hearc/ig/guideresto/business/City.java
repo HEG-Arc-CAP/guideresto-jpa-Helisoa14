@@ -19,7 +19,8 @@ public class City {
     @Column (name="nom_ville")
     private String cityName;
 
-    @OneToMany (mappedBy = "adress")
+    //Quand on pointe sur une classe embadded, il faut aller de nouveau dans l'attribut en question
+    @OneToMany (mappedBy = "address.city")
     private Set<Restaurant> restaurants;
 
     public City() {

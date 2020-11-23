@@ -1,13 +1,23 @@
 package ch.hearc.ig.guideresto.business;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+@Entity
+@Table(name = "COMMENTAIRES")
 public class CompleteEvaluation extends Evaluation {
-    
+
+    @Column(name = "commentaire")
     private String comment;
+    @Column(name = "non_utilisateur")
     private String username;
+
+    @OneToMany(mappedBy = "evaluation")
     private Set<Grade> grades;
 
     public CompleteEvaluation() {
