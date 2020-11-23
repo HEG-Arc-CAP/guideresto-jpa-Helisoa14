@@ -10,10 +10,14 @@ import java.util.Date;
 public abstract class Evaluation {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_COMM")
+    @SequenceGenerator(name="SEQ_COMM", sequenceName = "SEQ_COMMENTAIRES", allocationSize = 1)
+
     @Column (name = "numero")
     private Integer id;
     @Column (name = "date_eval")
     private Date visitDate;
+
     @Transient
     private Restaurant restaurant;
 

@@ -10,13 +10,18 @@ import java.util.Set;
 @Table (name = "TYPE_GASTRONOMIQUES")
 public class RestaurantType {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_TYPE")
+    @SequenceGenerator(name="SEQ_TYPE", sequenceName = "SEQ_TYPES_GASTRONOMIQUES", allocationSize = 1)
+
     @Column (name = "numero")
     private Integer id;
     @Column (name = "libelle")
     private String label;
     @Column (name = "description")
     private String description;
-    @Transient
+
+    //Car on a deja un mapping du coté restaurant
+    @OneToMany (mappedBy = "type")
     private Set<Restaurant> restaurants;
 
     public RestaurantType() {

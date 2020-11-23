@@ -7,13 +7,20 @@ import javax.persistence.*;
 public class Grade {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_NOTE")
+    @SequenceGenerator(name="SEQ_NOTE", sequenceName = "SEQ_NOTES", allocationSize = 1)
+
     @Column (name = "numero")
     private Integer id;
     @Column (name = "note")
     private Integer grade;
-    @Transient
+
+    @ManyToOne
+    @JoinColumn(name = "fk_comm")
     private CompleteEvaluation evaluation;
-    @Transient
+
+    @ManyToOne
+    @JoinColumn(name = "fk_crit")
     private EvaluationCriteria criteria;
 
     public Grade() {

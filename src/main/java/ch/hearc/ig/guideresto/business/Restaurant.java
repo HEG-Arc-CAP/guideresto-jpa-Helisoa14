@@ -9,6 +9,9 @@ import java.util.Set;
 @Table(name = "RESTAURANTS")
 public class Restaurant {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_REST")
+    @SequenceGenerator(name="SEQ_REST", sequenceName = "SEQ_RESTAURANTS", allocationSize = 1)
+
     @Column (name = "numero")
     private Integer id;
     @Column (name = "nom")
@@ -17,11 +20,16 @@ public class Restaurant {
     private String description;
     @Column (name = "site_web")
     private String website;
-    @Transient
+
+    @OneToMany
+    @JoinColumn(name = "fk_rest")
     private Set<Evaluation> evaluations;
-    @Transient
+
+    @Embedded
     private Localisation address;
-    @Transient
+
+    @ManyToOne
+    @JoinColumn(name = "fk_type")
     private RestaurantType type;
 
     public Restaurant() {

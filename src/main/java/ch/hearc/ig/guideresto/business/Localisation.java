@@ -1,17 +1,16 @@
 package ch.hearc.ig.guideresto.business;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
-@Entity
-@Table (name = "RESTAURANTS")
+//Embedded, je ne suis pas capable de me mapper tout seul
+@Embeddable
 public class Localisation {
 
     @Column(name = "adresse")
     private String street;
-    @Transient
+
+    @ManyToOne
+    @JoinColumn(name = "fk_vil")
     private City city;
 
     public Localisation() {

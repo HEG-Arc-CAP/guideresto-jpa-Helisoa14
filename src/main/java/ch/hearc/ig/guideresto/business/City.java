@@ -9,13 +9,17 @@ import java.util.Set;
 public class City {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_VIL")
+    @SequenceGenerator(name="SEQ_VIL", sequenceName = "SEQ_VILLES", allocationSize = 1)
+
     @Column(name="numero")
     private Integer id;
     @Column (name="code_postal")
     private String zipCode;
     @Column (name="nom_ville")
     private String cityName;
-    @Transient
+
+    @OneToMany (mappedBy = "adress")
     private Set<Restaurant> restaurants;
 
     public City() {
