@@ -39,6 +39,13 @@ public class RestaurantType {
         this.description = description;
     }
 
+    //Pour la JPA bidirectionnelle
+    public void addRestaurant(Restaurant restaurant){
+        restaurant.setType(this);
+        this.getRestaurants().add(restaurant);
+
+    }
+
     public Integer getId() {
         return id;
     }

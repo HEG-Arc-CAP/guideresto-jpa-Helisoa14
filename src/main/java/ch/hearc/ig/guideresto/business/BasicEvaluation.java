@@ -1,6 +1,8 @@
 package ch.hearc.ig.guideresto.business;
 
+import ch.hearc.ig.guideresto.persistance.BooleanConverter;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -11,7 +13,9 @@ import java.util.Date;
 public class BasicEvaluation extends Evaluation {
 
     @Column(name = "appreciation")
+    @Convert(converter = BooleanConverter.class)
     private boolean likeRestaurant;
+
     @Column(name = "adresse_ip")
     private String ipAddress;
     @Transient

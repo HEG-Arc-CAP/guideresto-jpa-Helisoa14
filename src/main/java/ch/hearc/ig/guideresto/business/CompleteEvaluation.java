@@ -1,5 +1,6 @@
 package ch.hearc.ig.guideresto.business;
 
+import antlr.GrammarAnalyzer;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
@@ -33,6 +34,13 @@ public class CompleteEvaluation extends Evaluation {
         this.comment = comment;
         this.username = username;
         this.grades = new HashSet();
+    }
+
+    //Pour la JPA bidirectionnelle
+    public void addGrade(Grade grade){
+        grade.setEvaluation(this);
+        this.getGrades().add(grade);
+
     }
     
     public String getComment() {

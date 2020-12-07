@@ -3,12 +3,29 @@ package ch.hearc.ig.guideresto.service;
 import ch.hearc.ig.guideresto.business.*;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
 
 public class RestaurantService {
+    //Création
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("guideRestoPersistenceUnit");
 
     public City insertCity(String cityZipCode, String cityName) {
-        return null;
+
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        City city = new City(cityZipCode, cityName);
+        entityManager.persist(city);
+
+        transaction.commit();
+
+        return city;
     }
 
     public BasicEvaluation insertBasicEvaluation(BasicEvaluation basicEvaluation) {
@@ -16,11 +33,32 @@ public class RestaurantService {
     }
 
     public Set<Restaurant> researchAllRestaurants() {
-        return Collections.emptySet();
+        Set<Restaurant> restaurants = new HashSet<>();
+
+        EntityManager entityManager = emf.createEntityManager();
+       // EntityTransaction transaction = entityManager.getTransaction();
+       // Pas besoin de transaction car on est sur un SELECT
+
+        //find (class, type de la PK)
+        //boucle
+        //Le JPQL est toujours fait sur les classes
+        restaurants = new HashSet<>(entityManager.createQuery("SELECT r FROM Restaurant r").getResultList());
+
+        return restaurants;
     }
 
     public Restaurant researchById(Integer restaurantId) {
-        return null;
+        Set<Restaurant> restaurants = new HashSet<>();
+
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        Restaurant restaurant = entityManager.find(Restaurant.class, 1);
+        restaurants.add(restaurant);
+
+        transaction.commit();
+        return restaurant;
     }
 
     public Set<Restaurant> researchByName(String name) {
@@ -32,6 +70,18 @@ public class RestaurantService {
     }
 
     public Set<City> researchAllCities() {
+        Set<City> cities = new HashSet<>();
+
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        //find (class, type de la PK)
+        City city = entityManager.find(City.class, 1);
+        cities.add(city);
+
+        transaction.commit();
+
         return Collections.emptySet();
     }
 
@@ -40,7 +90,16 @@ public class RestaurantService {
     }
 
     public Restaurant insertRestaurant(Restaurant restaurant) {
-        return null;
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        //Remonter dans la méthode pour voir dans quel état il est
+        entityManager.persist(restaurant);
+
+        transaction.commit();
+
+        return restaurant;
     }
 
     public Set<EvaluationCriteria> researchAllEvaluationCritierias() {
@@ -52,10 +111,24 @@ public class RestaurantService {
     }
 
     public Restaurant updateRestaurant(Restaurant restaurant) {
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        entityManager.detach(restaurant);
+
+        transaction.commit();
         return null;
     }
 
     public void deleteRestaurant(Restaurant restaurant) {
+        EntityManager entityManager = emf.createEntityManager();
+        EntityTransaction transaction = entityManager.getTransaction();
+        transaction.begin();
+
+        entityManager.detach(restaurant);
+
+        transaction.commit();
     }
 
     public Set<Restaurant> researchByType(RestaurantType type) {

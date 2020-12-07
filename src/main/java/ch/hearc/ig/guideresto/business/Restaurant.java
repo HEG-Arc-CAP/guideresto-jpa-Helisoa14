@@ -28,7 +28,7 @@ public class Restaurant {
     @Embedded
     private Localisation address;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_type")
     private RestaurantType type;
 
@@ -54,6 +54,15 @@ public class Restaurant {
         this.evaluations = new HashSet();
         this.address = address;
         this.type = type;
+    }
+
+
+    //Pour la JPA bidirectionnelle
+    // Mettre dans celui qui n'a le FK donc le SET, mais on peut faire les deux
+    public void addEvaluation(Evaluation evaluation){
+        evaluation.setRestaurant(this);
+        this.getEvaluations().add(evaluation);
+
     }
 
     public Integer getId() {

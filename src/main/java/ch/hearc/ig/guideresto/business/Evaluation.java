@@ -6,7 +6,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-@Table (name = "COMMENTAIRES")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Evaluation {
 
     @Id
@@ -31,7 +31,8 @@ public abstract class Evaluation {
         this.id = id;
         this.visitDate = visitDate;
         this.restaurant = restaurant;
-    }    
+    }
+
 
     public Integer getId() {
         return id;
