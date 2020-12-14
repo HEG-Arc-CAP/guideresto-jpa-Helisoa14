@@ -1,6 +1,5 @@
 package ch.hearc.ig.guideresto.business;
 
-import antlr.GrammarAnalyzer;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;

@@ -3,10 +3,15 @@ package ch.hearc.ig.guideresto.business;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 @Entity
 @Table (name = "CRITERES_EVALUATION")
+@NamedQuery(
+    name = "CritereEvaluationList",
+    query = "SELECT evaCrit FROM EvaluationCriteria evaCrit"
+)
 public class EvaluationCriteria {
     @Id
     @Column (name="numero")

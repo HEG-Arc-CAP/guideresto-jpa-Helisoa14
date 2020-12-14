@@ -1,13 +1,15 @@
 package ch.hearc.ig.guideresto.business;
 
-import org.hibernate.annotations.CollectionId;
-
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table (name = "TYPE_GASTRONOMIQUES")
+@NamedNativeQuery(
+    name="RestaurantsTypeList",
+    query ="SELECT * FROM TYPE_GASTRONOMIQUES"
+)
 public class RestaurantType {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_TYPE")
