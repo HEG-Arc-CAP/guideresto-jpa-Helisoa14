@@ -40,7 +40,6 @@ public class RestaurantService {
         EntityManager entityManager = emf.createEntityManager();
        // EntityTransaction transaction = entityManager.getTransaction();
        // Pas besoin de transaction car on est sur un SELECT
-        //find (class, type de la PK)
         //Le JPQL est toujours fait sur les classes
         String queryString = "SELECT r FROM Restaurant r";
         restaurants = new HashSet<>(entityManager.createQuery(queryString, Restaurant.class).getResultList());
@@ -53,11 +52,9 @@ public class RestaurantService {
         //EntityTransaction transaction = entityManager.getTransaction()
         //Restaurant restaurant = entityManager.find(Restaurant.class, 1);
         //QUESTION : Finalement quand utiliser le find?
-        String queryString = "SELECT r FROM Restaurant r where r.id=?1" ;
-        TypedQuery<Restaurant> query = entityManager.createQuery(queryString, Restaurant.class);
-        query.setParameter(1, restaurantId);
-        Restaurant restaurant = query.getSingleResult();
-        return restaurant;
+      //REPONSE : Dans tous les cas où la recherche par identité technique (@Id) est suffisante. C'est le cas ici:
+      //find (class, type de la PK)
+      return entityManager.find(Restaurant.class, 1);
     }
 
     public Set<Restaurant> researchByName(String name) {
@@ -73,7 +70,8 @@ public class RestaurantService {
     public Set<Restaurant> researchByCity(String cityName) {
         Set<Restaurant> restaurants = new HashSet<>();
         EntityManager entityManager = emf.createEntityManager();
-        //QUESTION : Est-ce un bon adressage pour la navigation dans l'objet ??
+        //QUESTION : Est-ce un bon adressage pour la navigation dans l'objet ?? Oui juste.
+      //Attention, la navigation dans l'objet ne fonctionne que pour les attributs de type simple et non complexe comme les listes.
         String queryString = "SELECT r FROM Restaurant r where r.address.city.cityName = "+ cityName ;
         TypedQuery<Restaurant> query = entityManager.createQuery(queryString, Restaurant.class);
         restaurants =  new HashSet<>(query.getResultList());
@@ -92,7 +90,7 @@ public class RestaurantService {
     public Set<RestaurantType> researchAllRestaurantTypes() {
         Set<RestaurantType> restaurantTypes= new HashSet<>();
         EntityManager entityManager = emf.createEntityManager();
-        //QUESTION : Dois-ton prendre les annotions hybernate ou celles de javax.persistance??
+        //QUESTION : Dois-ton prendre les annotions hybernate ou celles de javax.persistance?? Toujours  JAVAX persistance car c'est JPA
         restaurantTypes = new HashSet<>(entityManager.createNativeQuery("RestaurantsTypeList").getResultList());
 
         return restaurantTypes;
@@ -113,6 +111,9 @@ public class RestaurantService {
         Set<EvaluationCriteria> evaluationCriteria = new HashSet<>();
         EntityManager entityManager = emf.createEntityManager();
         //QUESTION : Je ne comprend pas pourquoi est-ce faux ?
+      ////REPONSE: Ce n'est pas faux. C'est IntellIJ qui tente intelligemment de trouver la NamedQuery CritereEvaluationList.
+      //Il ne la trouve pas avec le paramétrage actuel de ton IDE, projet. C'est juste un warning, pas une erreur.
+      //Si tu veux la corriger, il faut configurer IntelliJ
         evaluationCriteria = new HashSet<>(entityManager.createNamedQuery("CritereEvaluationList", EvaluationCriteria.class).getResultList());
 
         return evaluationCriteria;
@@ -133,11 +134,13 @@ public class RestaurantService {
         EntityTransaction transaction = entityManager.getTransaction();
         transaction.begin();
         //QUESTION : la logique du update est présente dans le code source de l'application. Doit-on la merger ici ? Si non, quelle démarche entreprendre ?
-            entityManager.detach(restaurant);
-            restaurant.setName("Nom modifié");
+          //REPONSE: Ca dépend de l'architecture de ton application. A mon sens, si tu gères correctement ta transaction,
+           //ton entité arrive ici à l'état détaché. Le plus juste est effectivement de la merger.
+           // entityManager.detach(restaurant); Pas besoin
+           // restaurant.setName("Nom modifié"); Déjà fait dans l'application
             entityManager.merge(restaurant);
         transaction.commit();
-        return null;
+        return restaurant;
     }
 
     public void deleteRestaurant(Restaurant restaurant) {
@@ -146,14 +149,22 @@ public class RestaurantService {
         transaction.begin();
                 //QUESTION : Est-ce que cette vérification est nécessaire ?
             //Vérification de l'existance du restaurant
+      //REPONSE: Dans l'idéale, il faudrait rajouter un contrôle effectivement, et retourner une Exception e si restaurant n'existe pas
+      //L'entité en arrivant ici est DETACH, donc on peut faire ceci,le code suivant est donc envisageable
+      //entityManager.merge(restaurant);
+      //entityManager.remove(restaurant);
+
             Restaurant restaurantExist = this.researchById(restaurant.getId());
            // QUESTION : entityManager.detach(restaurant); a-t-on besoin de cette méthode ?
+            // REPONSE: Tu vas rarement l'utiliser toi-même. Par contre, dès le moment ou entityManager.close() est appelé,
+            // toutes les entités liés à cet EntityManager vont automatiquement être détachées.
             entityManager.remove(restaurantExist);
         transaction.commit();
+        entityManager.close(); //Rend la connexion au pool de connexion
     }
 
     public Set<Restaurant> researchByType(RestaurantType type) {
-        //QUESTION : je n'ai pas réussi à bindé un objet
+        //Bindé un objet
         Set<Restaurant> restaurants = new HashSet<>();
         EntityManager entityManager = emf.createEntityManager();
         String queryString = "SELECT r FROM Restaurant r where r.type=?1" ;
@@ -175,8 +186,12 @@ public class RestaurantService {
     public Set<Restaurant> researchRestaurantByGrade() {
         Set<Restaurant> restaurants = new HashSet<>();
         EntityManager entityManager = emf.createEntityManager();
-        //QUESTION : vous validez ??
-        String queryString = "SELECT r FROM Restaurant r LEFT JOIN evaluation eva where eva.grade.garde > (SELECT AVG(g.grade) FROM grade g)";
+        //QUESTION : vous validez ?? NON
+        //FAUX String queryString = "SELECT r FROM Restaurant r LEFT JOIN evaluation eva where eva.grade.garde > (SELECT AVG(g.grade) FROM grade g)";
+      //Il faut passer par les attributs qui join et attention à la Case Sensitive des nom des classes
+      //La navigation par objet ne fonctionne pas sur les
+          //REPONSE: Le mieux est de le tester, mais en l'état, ce n'est pas juste.
+        String queryString = " SELECT r FROM Restaurant r LEFT JOIN r.evaluations eva LEFT JOIN eva.grades gra WHERE gra.grade > (SELECT AVG(g.grade) FROM Grade g)";
         TypedQuery<Restaurant> query = entityManager.createQuery(queryString, Restaurant.class);
         restaurants =  new HashSet<>(query.getResultList());
         return restaurants;
@@ -186,10 +201,17 @@ public class RestaurantService {
         Set<Restaurant> restaurants = new HashSet<>();
         EntityManager entityManager = emf.createEntityManager();
         //QUESTION : va-t-il retrouver le complete evaluation ?
-        String queryString = "SELECT r, AVG(g.grade) FROM Restaurant r LEFT JOIN evaluation ev JOIN Grade g ORDER BY r.name";
+      //REPONSE: Non, car tu as sélectionné le Restaurant et la moyenne des Grade, c'est tout
+       // String queryString = "SELECT r, AVG(g.grade) FROM Restaurant r LEFT JOIN evaluation ev JOIN Grade g ORDER BY r.name";
         // QUESTION : On ne peut pas mettre de type primitif comme résultat ??
-        TypedQuery<Integer> query = entityManager.createQuery(queryString, Integer.class);
-        int result = query.getSingleResult();
+      //REPONSE: Pas de cette manière, ton type de retour est une List<Object[2]>
+      // [0] ==> Restaurant
+      // [1] ==> Integer
+
+      String queryString = "SELECT r, ev, AVG(g.grade) FROM Restaurant r LEFT JOIN r.evaluations ev JOIN ev.gardes g ORDER BY r.name";
+        TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
+        //Restaurant restaurant = (Restaurant) query.getSingleResult()[0];  Pour le restaurant
+        Integer result = (Integer) query.getSingleResult()[2];
         return result;
     }
 
