@@ -10,7 +10,7 @@ public class Localisation {
     private String street;
 
     @ManyToOne
-    @JoinColumn(name = "fk_vil")
+    @JoinColumn(name = "fk_vill")
     private City city;
 
     public Localisation() {

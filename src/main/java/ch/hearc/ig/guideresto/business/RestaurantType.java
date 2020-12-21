@@ -1,14 +1,15 @@
 package ch.hearc.ig.guideresto.business;
 
+import java.util.Objects;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table (name = "TYPE_GASTRONOMIQUES")
+@Table (name = "TYPES_GASTRONOMIQUES")
 @NamedNativeQuery(
     name="RestaurantsTypeList",
-    query ="SELECT * FROM TYPE_GASTRONOMIQUES"
+    query ="SELECT * FROM TYPES_GASTRONOMIQUES"
 )
 public class RestaurantType {
     @Id
@@ -78,5 +79,24 @@ public class RestaurantType {
 
     public void setRestaurants(Set<Restaurant> restaurants) {
         this.restaurants = restaurants;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        // https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        // L'identité métier correspond au label
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        RestaurantType that = (RestaurantType) o;
+        return Objects.equals(getLabel(), that.getLabel());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLabel());
     }
 }
