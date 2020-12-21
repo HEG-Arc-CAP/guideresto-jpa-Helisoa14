@@ -1,5 +1,6 @@
 package ch.hearc.ig.guideresto.business;
 
+import java.util.Objects;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +25,8 @@ public class City {
     private Set<Restaurant> restaurants;
 
     public City() {
-        this(null, null);
+        // Pour JPA On est obliger d'avoir un constructeur par défaut
+        //this(null, null);
     }
 
     public City(String zipCode, String cityName) {
@@ -68,5 +70,24 @@ public class City {
 
     public void setRestaurants(Set<Restaurant> restaurants) {
         this.restaurants = restaurants;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        // https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        // Dans notre cas, on considère que notre identifiant métier/naturel est le code postal
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        City city = (City) o;
+        return Objects.equals(getZipCode(), city.getZipCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getZipCode());
     }
 }

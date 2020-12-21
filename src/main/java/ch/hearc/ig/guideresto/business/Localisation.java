@@ -37,4 +37,25 @@ public class Localisation {
     public void setCity(City city) {
         this.city = city;
     }
+
+    //Dès qu'on n'a pas d'identité, l'egalité est fait sur la somme de ces attributs
+    @Override
+    public boolean equals(Object o) {
+        // C'est une valeur, elle ne possède pas d'identité
+        // Son égalité est définit sur la somme de ses attributs
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Localisation that = (Localisation) o;
+
+        if (street != null ? !street.equals(that.street) : that.street != null) return false;
+        return city != null ? city.equals(that.city) : that.city == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = street != null ? street.hashCode() : 0;
+        result = 31 * result + (city != null ? city.hashCode() : 0);
+        return result;
+    }
 }

@@ -21,7 +21,7 @@ public class RestaurantService {
             City city = new City(cityZipCode, cityName);
             entityManager.persist(city);
         transaction.commit();
-
+        entityManager.close(); //Rend la connexion au pool de connexion
         return city;
     }
 
@@ -31,6 +31,7 @@ public class RestaurantService {
         transaction.begin();
          entityManager.persist(basicEvaluation);
         transaction.commit();
+        entityManager.close(); //Rend la connexion au pool de connexion
         return basicEvaluation;
     }
 
@@ -43,7 +44,7 @@ public class RestaurantService {
         //Le JPQL est toujours fait sur les classes
         String queryString = "SELECT r FROM Restaurant r";
         restaurants = new HashSet<>(entityManager.createQuery(queryString, Restaurant.class).getResultList());
-
+        entityManager.close(); //Rend la connexion au pool de connexion
         return restaurants;
     }
 
@@ -64,6 +65,7 @@ public class RestaurantService {
         TypedQuery<Restaurant> query = entityManager.createQuery(queryString, Restaurant.class);
         query.setParameter("name", name);
         restaurants =  new HashSet<>(query.getResultList());
+        entityManager.close(); //Rend la connexion au pool de connexion
         return restaurants;
     }
 
@@ -75,6 +77,7 @@ public class RestaurantService {
         String queryString = "SELECT r FROM Restaurant r where r.address.city.cityName = "+ cityName ;
         TypedQuery<Restaurant> query = entityManager.createQuery(queryString, Restaurant.class);
         restaurants =  new HashSet<>(query.getResultList());
+        entityManager.close(); //Rend la connexion au pool de connexion
         return restaurants;
     }
 
@@ -83,7 +86,7 @@ public class RestaurantService {
         EntityManager entityManager = emf.createEntityManager();
         String queryString = "SELECT c FROM City c";
         cities = new HashSet<>(entityManager.createQuery(queryString, City.class).getResultList());
-
+        entityManager.close(); //Rend la connexion au pool de connexion
         return cities;
     }
 
@@ -92,7 +95,7 @@ public class RestaurantService {
         EntityManager entityManager = emf.createEntityManager();
         //QUESTION : Dois-ton prendre les annotions hybernate ou celles de javax.persistance?? Toujours  JAVAX persistance car c'est JPA
         restaurantTypes = new HashSet<>(entityManager.createNativeQuery("RestaurantsTypeList").getResultList());
-
+        entityManager.close(); //Rend la connexion au pool de connexion
         return restaurantTypes;
     }
 
@@ -103,7 +106,7 @@ public class RestaurantService {
             //Remonter dans la méthode pour voir dans quel état il est
             entityManager.persist(restaurant);
         transaction.commit();
-
+        entityManager.close(); //Rend la connexion au pool de connexion
         return restaurant;
     }
 
@@ -115,7 +118,7 @@ public class RestaurantService {
       //Il ne la trouve pas avec le paramétrage actuel de ton IDE, projet. C'est juste un warning, pas une erreur.
       //Si tu veux la corriger, il faut configurer IntelliJ
         evaluationCriteria = new HashSet<>(entityManager.createNamedQuery("CritereEvaluationList", EvaluationCriteria.class).getResultList());
-
+        entityManager.close(); //Rend la connexion au pool de connexion
         return evaluationCriteria;
     }
 
@@ -125,7 +128,7 @@ public class RestaurantService {
         transaction.begin();
             entityManager.persist(completeEvaluation);
         transaction.commit();
-
+        entityManager.close(); //Rend la connexion au pool de connexion
         return completeEvaluation;
     }
 
@@ -140,6 +143,7 @@ public class RestaurantService {
            // restaurant.setName("Nom modifié"); Déjà fait dans l'application
             entityManager.merge(restaurant);
         transaction.commit();
+        entityManager.close(); //Rend la connexion au pool de connexion
         return restaurant;
     }
 
@@ -150,6 +154,7 @@ public class RestaurantService {
                 //QUESTION : Est-ce que cette vérification est nécessaire ?
             //Vérification de l'existance du restaurant
       //REPONSE: Dans l'idéale, il faudrait rajouter un contrôle effectivement, et retourner une Exception e si restaurant n'existe pas
+        //Car dès qu'on a fermé l'entity manager, tous les objetc qui sortent de restaurant servie sont detache implicitement.
       //L'entité en arrivant ici est DETACH, donc on peut faire ceci,le code suivant est donc envisageable
       //entityManager.merge(restaurant);
       //entityManager.remove(restaurant);
@@ -171,6 +176,7 @@ public class RestaurantService {
         TypedQuery<Restaurant> query = entityManager.createQuery(queryString, Restaurant.class);
         query.setParameter(1, type);
         restaurants =  new HashSet<>(query.getResultList());
+        entityManager.close(); //Rend la connexion au pool de connexion
         return restaurants;
     }
 
@@ -180,6 +186,7 @@ public class RestaurantService {
         String queryString = "SELECT r FROM Restaurant r where r.type is null" ;
         TypedQuery<Restaurant> query = entityManager.createQuery(queryString, Restaurant.class);
         restaurants =  new HashSet<>(query.getResultList());
+        entityManager.close(); //Rend la connexion au pool de connexion
         return restaurants;
     }
 
@@ -194,6 +201,7 @@ public class RestaurantService {
         String queryString = " SELECT r FROM Restaurant r LEFT JOIN r.evaluations eva LEFT JOIN eva.grades gra WHERE gra.grade > (SELECT AVG(g.grade) FROM Grade g)";
         TypedQuery<Restaurant> query = entityManager.createQuery(queryString, Restaurant.class);
         restaurants =  new HashSet<>(query.getResultList());
+        entityManager.close(); //Rend la connexion au pool de connexion
         return restaurants;
     }
 
@@ -212,6 +220,7 @@ public class RestaurantService {
         TypedQuery<Object[]> query = entityManager.createQuery(queryString, Object[].class);
         //Restaurant restaurant = (Restaurant) query.getSingleResult()[0];  Pour le restaurant
         Integer result = (Integer) query.getSingleResult()[2];
+        entityManager.close(); //Rend la connexion au pool de connexion
         return result;
     }
 

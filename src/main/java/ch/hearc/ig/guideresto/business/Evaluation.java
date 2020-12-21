@@ -1,5 +1,6 @@
 package ch.hearc.ig.guideresto.business;
 
+import java.util.Objects;
 import jdk.jfr.Enabled;
 
 import javax.persistence.*;
@@ -56,5 +57,30 @@ public abstract class Evaluation {
 
     public void setRestaurant(Restaurant restaurant) {
         this.restaurant = restaurant;
+    }
+
+    //Iic on a une exception car on n'a pas la clé métier donc on prend l'identité métier
+    @Override
+    public boolean equals(Object o) {
+        // https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        // Nous n'avons pas d'identité métier, on utilise l'identité technique pour définir l'égalité
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Evaluation evaluation = (Evaluation) o;
+        if(id == null || evaluation.id == null) {
+            return false;
+        }
+        return Objects.equals(id, evaluation.id);
+    }
+
+    @Override
+    public int hashCode() {
+        // https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        // Dans n'avons pas d'identifiant naturel, on retourne une valeur fixe
+        return getClass().hashCode();
     }
 }

@@ -1,5 +1,6 @@
 package ch.hearc.ig.guideresto.business;
 
+import java.util.Objects;
 import javax.persistence.*;
 
 @Entity
@@ -68,5 +69,25 @@ public class Grade {
 
     public void setCriteria(EvaluationCriteria criteria) {
         this.criteria = criteria;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        // https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        // La clé métier correspond à l'évaluation et au critère d'évaluation
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Grade grade1 = (Grade) o;
+        return Objects.equals(getGrade(), grade1.getGrade()) &&
+            Objects.equals(getEvaluation(), grade1.getEvaluation());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getGrade(), getEvaluation());
     }
 }

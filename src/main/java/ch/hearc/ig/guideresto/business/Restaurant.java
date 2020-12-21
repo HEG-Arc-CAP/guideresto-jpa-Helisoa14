@@ -1,6 +1,7 @@
 package ch.hearc.ig.guideresto.business;
 
 
+import java.util.Objects;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
@@ -62,7 +63,11 @@ public class Restaurant {
     public void addEvaluation(Evaluation evaluation){
         evaluation.setRestaurant(this);
         this.getEvaluations().add(evaluation);
-
+    }
+    //Ne pas oublier le remove
+    public void removeEvaluation(Evaluation eval){
+        this.evaluations.remove(eval);
+        eval.setRestaurant(null);
     }
 
     public Integer getId() {
@@ -131,5 +136,24 @@ public class Restaurant {
 
     public void setType(RestaurantType type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        // https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        // La clé métier correspond au nom de notre restaurant dans notre application
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Restaurant that = (Restaurant) o;
+        return Objects.equals(getName(), that.getName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName());
     }
 }

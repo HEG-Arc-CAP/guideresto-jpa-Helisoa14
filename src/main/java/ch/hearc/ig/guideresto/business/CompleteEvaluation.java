@@ -1,7 +1,9 @@
 package ch.hearc.ig.guideresto.business;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Date;
@@ -18,6 +20,8 @@ public class CompleteEvaluation extends Evaluation {
     private String username;
 
     @OneToMany(mappedBy = "evaluation")
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "evaluation", cascade = CascadeType.ALL)
+    //CASCADE: ce que je fait la va aller directement sur les grades
     private Set<Grade> grades;
 
     public CompleteEvaluation() {

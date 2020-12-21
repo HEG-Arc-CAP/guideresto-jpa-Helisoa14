@@ -22,7 +22,9 @@ public class BasicEvaluation extends Evaluation {
     private String hello;
 
     public BasicEvaluation() {
-        this(null, null, false, null);
+
+        // Pour JPA On est obliger d'avoir un constructeur par défaut
+        //this(null, null, false, null);
     }
 
     public BasicEvaluation(Date visitDate, Restaurant restaurant, boolean likeRestaurant, String ipAddress) {
